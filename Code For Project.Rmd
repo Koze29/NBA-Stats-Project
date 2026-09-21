@@ -1,0 +1,171 @@
+---
+title: "Final Project Code"
+author: "Kobe McCorkle"
+date: "2026-04-26"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+
+# Load NBA dataset from local file (contains player stats across seasons)
+nba = read.csv("C:/Users/mccor/Downloads/NBA STATsR.csv")
+
+# View column names to understand available variables
+names(nba)
+
+# Rename FG. column because R imports FG% as FG.
+colnames(nba)[colnames(nba) == "FG."] <- "FG_percent"
+
+# Select only relevant variables and remove missing values
+# Focus is on scoring, playing time, shot volume, and efficiency
+nba <- na.omit(nba[, c("Player", "Year", "MP", "PTS", "FGA", "FG_percent")])
+
+# Filter dataset to only include LeBron James for comparison
+lebron <- subset(nba, Player == "LeBron James")
+
+# Display LeBron's data to verify filtering worked
+lebron
+```
+```{r}
+# -------------------------------
+# GRAPH 1: Minutes Played vs Points
+# Purpose: Show relationship between playing time and scoring
+# -------------------------------
+plot(nba$MP, nba$PTS,
+     main = "Relationship Between Playing Time and Scoring",
+     xlab = "Minutes Played per Game (MP)",
+     ylab = "Points Scored per Game (PTS)")
+
+# Highlight LeBron’s data points to compare with league trends
+points(lebron$MP, lebron$PTS, pch = 19)
+
+# Add legend to distinguish all players vs LeBron
+legend("topleft",
+       legend = c("All Players", "LeBron James"),
+       pch = c(1, 19))
+```
+```{r}
+# -------------------------------
+# GRAPH 2: Field Goal Attempts vs Points
+# Purpose: Analyze impact of shot volume on scoring
+# -------------------------------
+plot(nba$FGA, nba$PTS,
+     main = "Impact of Shot Attempts on Scoring",
+     xlab = "Field Goal Attempts per Game (FGA)",
+     ylab = "Points Scored per Game (PTS)")
+
+# Highlight LeBron’s position within the relationship
+points(lebron$FGA, lebron$PTS, pch = 19)
+
+# Add legend for clarity
+legend("topleft",
+       legend = c("All Players", "LeBron James"),
+       pch = c(1, 19))
+```
+```{r}
+# -------------------------------
+# GRAPH 3: Field Goal Percentage vs Points
+# Purpose: Evaluate effect of shooting efficiency on scoring
+# -------------------------------
+plot(nba$FG_percent, nba$PTS,
+     main = "Effect of Shooting Efficiency on Scoring",
+     xlab = "Field Goal Percentage (FG%)",
+     ylab = "Points Scored per Game (PTS)")
+
+# Highlight LeBron’s efficiency compared to others
+points(lebron$FG_percent, lebron$PTS, pch = 19)
+
+# Add legend to identify LeBron
+legend("topleft",
+       legend = c("All Players", "LeBron James"),
+       pch = c(1, 19))
+```
+```{r}
+# -------------------------------
+# GRAPH 4: Histogram of Points
+# Purpose: Show distribution of scoring across all players
+# -------------------------------
+hist(nba$PTS,
+     main = "Distribution of Points Among NBA Players",
+     xlab = "Points per Game (PTS)",
+     ylab = "Number of Players")
+```
+```{r}
+# -------------------------------
+# GRAPH 5: LeBron Scoring Over Time
+# Purpose: Analyze consistency of LeBron’s scoring across seasons
+# -------------------------------
+plot(1:nrow(lebron), lebron$PTS,
+     type = "b",
+     main = "LeBron James Scoring Over Time",
+     xlab = "Season",
+     ylab = "Points per Game (PTS)",
+     xaxt = "n")
+
+# Replace numeric x-axis with actual season labels
+axis(1, at = 1:nrow(lebron), labels = lebron$Year, las = 2)
+```
+```{r}
+# -------------------------------
+# STATISTICAL ANALYSIS
+# -------------------------------
+
+# Calculate league average scoring
+mean(nba$PTS)
+
+# Correlation: Minutes vs Points (relationship strength)
+cor(nba$MP, nba$PTS)
+
+# Correlation: Shot Attempts vs Points (strongest relationship)
+cor(nba$FGA, nba$PTS)
+
+# Correlation: Efficiency vs Points (weaker relationship)
+cor(nba$FG_percent, nba$PTS)
+
+# Simple linear regression model: Predict scoring using shot attempts
+model_simple = lm(PTS ~ FGA, data = nba)
+
+# Display full regression results and model strength
+summary(model_simple)
+
+# -------------------------------
+# LEBRON SUMMARY STATISTICS
+# -------------------------------
+
+# Average minutes played by LeBron
+mean(lebron$MP)
+
+# Average scoring by LeBron
+mean(lebron$PTS)
+
+# Average shot attempts by LeBron
+mean(lebron$FGA)
+
+# Average shooting efficiency of LeBron
+mean(lebron$FG_percent)
+
+# Standard deviation of LeBron’s scoring (consistency measure)
+sd(lebron$PTS)
+
+# Highest scoring season in LeBron’s data
+max(lebron$PTS)
+
+# Lowest scoring season in LeBron’s data
+min(lebron$PTS)
+
+# Range of LeBron’s scoring across seasons
+max(lebron$PTS) - min(lebron$PTS)
+```
+
+
+
+
+
+
+
+
